@@ -72,6 +72,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.lang.ref.WeakReference;
 
+import java.io.File;
+import android.graphics.drawable.Drawable;
+import android.widget.ImageView;
+import android.os.Environment;
+import android.os.SystemProperties;
+
+import android.view.WindowManager;
+import android.view.Display;
+import android.util.DisplayMetrics;
+import android.view.Surface;
+
 /**
  * A simple callback interface which also provides the results of the task.
  */
@@ -479,6 +490,26 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         mContentWidth = mWidgetSpacingLayout.getContentWidth();
 
         AppsCustomizeTabHost host = (AppsCustomizeTabHost) getTabHost();
+
+        String forceHobby = SystemProperties.get("persist.sys.force.hobby");
+        if (forceHobby.equals("true")) {
+
+            LinearLayout linearlayout = ((LinearLayout)host.findViewById(R.id.apps_customize_content));
+            Drawable drawable = null;
+            if (requiresRotation()) {
+                drawable = getDrawableFromFile("launcher", "launcher_wallpaper_land.png");
+                if(drawable == null){
+                    drawable = getDrawableFromFile("launcher", "launcher_wallpaper.png");
+                }
+            }else{
+                drawable = getDrawableFromFile("launcher", "launcher_wallpaper.png");
+            }
+
+            if( null != drawable ) {
+                linearlayout.setBackgroundDrawable(drawable);
+            }
+        }
+
         final boolean hostIsTransitioning = host.isTransitioning();
 
         // Restore the page
@@ -1896,4 +1927,38 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
 
         return String.format(getContext().getString(stringId), page + 1, count);
     }
+
+    public boolean requiresRotation() {
+        WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+        Display dp = wm.getDefaultDisplay();
+        DisplayMetrics dpm = new DisplayMetrics();
+        dp.getRealMetrics(dpm);
+
+        float[] dims = {dpm.widthPixels, dpm.heightPixels};
+        float degrees = getDegreesForRotation(dp.getRotation());
+
+	return degrees > 0;
+    }
+
+    public float getDegreesForRotation(int value) {
+        switch (value) {
+        case Surface.ROTATION_90:
+            return 360f - 90f;
+        case Surface.ROTATION_180:
+            return 360f - 180f;
+        case Surface.ROTATION_270:
+            return 360f - 270f;
+        }
+        return 0f;
+    }
+
+    public Drawable getDrawableFromFile(String DIR, String MY_FILE_NAME) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(Environment.getDataDirectory().toString() + "/theme/"+DIR+"/");
+        builder.append(File.separator);
+        builder.append(MY_FILE_NAME);
+        String filePath = builder.toString();
+        return Drawable.createFromPath(filePath);
+    }
+
 }
