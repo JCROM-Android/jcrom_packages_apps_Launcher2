@@ -141,8 +141,8 @@ public final class Launcher extends Activity
 
     static final String EXTRA_SHORTCUT_DUPLICATE = "duplicate";
 
-    static final int SCREEN_COUNT = 5;
-    static final int DEFAULT_SCREEN = 2;
+    static final int SCREEN_COUNT = 7;
+    static final int DEFAULT_SCREEN = 4;
 
     private static final String PREFERENCES = "launcher.preferences";
     static final String FORCE_ENABLE_ROTATION_PROPERTY = "launcher.force_enable_rotation";
@@ -344,7 +344,24 @@ public final class Launcher extends Activity
         }
 
         checkForLocaleChange();
-        setContentView(R.layout.launcher);
+
+        // Use selected Number of Homescreen.
+        String screenNumStr = SystemProperties.get("persist.sys.num.homescreen");
+
+        if(screenNumStr == null || screenNumStr.length()== 0) {
+             setContentView(R.layout.launcher_5);
+        }else{
+             int screenNum = Integer.valueOf(screenNumStr);
+             switch(screenNum){
+                  case 1: setContentView(R.layout.launcher_1); break;
+                  case 3: setContentView(R.layout.launcher_3); break;
+                  case 5: setContentView(R.layout.launcher_5); break;
+                  case 7: setContentView(R.layout.launcher_7); break;
+                  default: setContentView(R.layout.launcher);
+             }
+        }
+        // Use selected Number of Homescreen.
+
         setupViews();
         showFirstRunWorkspaceCling();
 

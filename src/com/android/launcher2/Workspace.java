@@ -54,6 +54,7 @@ import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.os.SystemProperties;
 
 import com.android.launcher.R;
 import com.android.launcher2.FolderIcon.FolderRingAnimator;
@@ -193,6 +194,8 @@ public class Workspace extends SmoothPagedView
     private Runnable mDelayedSnapToPageRunnable;
     private Point mDisplaySize = new Point();
     private boolean mIsStaticWallpaper;
+    private int mDisplayWidth;
+    private int mDisplayHeight;
     private int mWallpaperTravelWidth;
     private int mSpringLoadedPageSpacing;
     private int mCameraDistance;
@@ -426,6 +429,8 @@ public class Workspace extends SmoothPagedView
         mWallpaperOffset = new WallpaperOffsetInterpolator();
         Display display = mLauncher.getWindowManager().getDefaultDisplay();
         display.getSize(mDisplaySize);
+        mDisplayWidth = display.getWidth();
+        mDisplayHeight = display.getHeight();
         mWallpaperTravelWidth = (int) (mDisplaySize.x *
                 wallpaperTravelToScreenWidthRatio(mDisplaySize.x, mDisplaySize.y));
 
@@ -852,15 +857,32 @@ public class Workspace extends SmoothPagedView
         final int maxDim = Math.max(displayMetrics.widthPixels, displayMetrics.heightPixels);
         final int minDim = Math.min(displayMetrics.widthPixels, displayMetrics.heightPixels);
 
-        // We need to ensure that there is enough extra space in the wallpaper for the intended
-        // parallax effects
-        if (LauncherApplication.isScreenLarge()) {
-            mWallpaperWidth = (int) (maxDim * wallpaperTravelToScreenWidthRatio(maxDim, minDim));
-            mWallpaperHeight = maxDim;
-        } else {
-            mWallpaperWidth = Math.max((int) (minDim * WALLPAPER_SCREENS_SPAN), maxDim);
-            mWallpaperHeight = maxDim;
-        }
+
+        // Fix wallpaper mod start
+        String fixedWallpaper = SystemProperties.get("persist.sys.fixed.wallpaper");
+        if(fixedWallpaper.equals("true")) {
+              // We need to ensure that there is enough extra space in the wallpaper for the intended
+              // parallax effects
+              if (LauncherApplication.isScreenLarge()) {
+                     mWallpaperWidth = mDisplayWidth;
+                     mWallpaperHeight = mDisplayHeight;
+                     Log.e(TAG, "Screensize " + Integer.toString(mDisplayWidth) + "x" +Integer.toString(mDisplayHeight) + " ScreenLarge");
+             } else {
+                     mWallpaperWidth = mDisplayWidth;
+                     mWallpaperHeight = mDisplayHeight;
+                     Log.e(TAG, "Screensize " + Integer.toString(mDisplayWidth) + "x" +Integer.toString(mDisplayHeight));
+                }
+         }else{
+              // We need to ensure that there is enough extra space in the wallpaper for the intended
+              // parallax effects
+              if (LauncherApplication.isScreenLarge()) {
+                     mWallpaperWidth = (int) (maxDim * wallpaperTravelToScreenWidthRatio(maxDim, minDim));
+                     mWallpaperHeight = maxDim;
+             } else {
+                     mWallpaperWidth = Math.max((int) (minDim * WALLPAPER_SCREENS_SPAN), maxDim);
+                     mWallpaperHeight = maxDim;
+               }
+         }
         new Thread("setWallpaperDimension") {
             public void run() {
                 mWallpaperManager.suggestDesiredDimensions(mWallpaperWidth, mWallpaperHeight);
