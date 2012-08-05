@@ -347,17 +347,36 @@ public final class Launcher extends Activity
 
         // Use selected Number of Homescreen.
         String screenNumStr = SystemProperties.get("persist.sys.num.homescreen");
+        String gradientStr = SystemProperties.get("persist.sys.prop.gradient");
 
-        if(screenNumStr == null || screenNumStr.length()== 0) {
-             setContentView(R.layout.launcher_5);
+
+        if(gradientStr.equals("true")){
+             // in case of no gradient home screen
+             if(screenNumStr == null || screenNumStr.length()== 0) {
+                  setContentView(R.layout.launcher_5_nograd);
+             }else{
+                  int screenNum = Integer.valueOf(screenNumStr);
+                  switch(screenNum){
+                       case 1: setContentView(R.layout.launcher_1_nograd); break;
+                       case 3: setContentView(R.layout.launcher_3_nograd); break;
+                       case 5: setContentView(R.layout.launcher_5_nograd); break;
+                       case 7: setContentView(R.layout.launcher_7_nograd); break;
+                       default: setContentView(R.layout.launcher_nograd);
+                  }
+             }
         }else{
-             int screenNum = Integer.valueOf(screenNumStr);
-             switch(screenNum){
-                  case 1: setContentView(R.layout.launcher_1); break;
-                  case 3: setContentView(R.layout.launcher_3); break;
-                  case 5: setContentView(R.layout.launcher_5); break;
-                  case 7: setContentView(R.layout.launcher_7); break;
-                  default: setContentView(R.layout.launcher);
+             // in case of normal screen
+             if(screenNumStr == null || screenNumStr.length()== 0) {
+                  setContentView(R.layout.launcher_5);
+             }else{
+                  int screenNum = Integer.valueOf(screenNumStr);
+                  switch(screenNum){
+                       case 1: setContentView(R.layout.launcher_1); break;
+                       case 3: setContentView(R.layout.launcher_3); break;
+                       case 5: setContentView(R.layout.launcher_5); break;
+                       case 7: setContentView(R.layout.launcher_7); break;
+                       default: setContentView(R.layout.launcher);
+                  }
              }
         }
         // Use selected Number of Homescreen.
