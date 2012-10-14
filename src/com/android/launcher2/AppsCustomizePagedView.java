@@ -80,7 +80,6 @@ import android.os.SystemProperties;
 
 import android.view.WindowManager;
 import android.view.Display;
-import android.util.DisplayMetrics;
 import android.view.Surface;
 
 /**
@@ -559,18 +558,22 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
-    public void onPackagesUpdated() {
-        // TODO: this isn't ideal, but we actually need to delay here. This call is triggered
-        // by a broadcast receiver, and in order for it to work correctly, we need to know that
-        // the AppWidgetService has already received and processed the same broadcast. Since there
-        // is no guarantee about ordering of broadcast receipt, we just delay here. This is a
-        // workaround until we add a callback from AppWidgetService to AppWidgetHost when widget
-        // packages are added, updated or removed.
-        postDelayed(new Runnable() {
-           public void run() {
-               updatePackages();
-           }
-        }, 1500);
+    public void onPackagesUpdated(boolean immediate) {
+        if (immediate) {
+            updatePackages();
+        } else {
+            // TODO: this isn't ideal, but we actually need to delay here. This call is triggered
+            // by a broadcast receiver, and in order for it to work correctly, we need to know that
+            // the AppWidgetService has already received and processed the same broadcast. Since there
+            // is no guarantee about ordering of broadcast receipt, we just delay here. This is a
+            // workaround until we add a callback from AppWidgetService to AppWidgetHost when widget
+            // packages are added, updated or removed.
+            postDelayed(new Runnable() {
+               public void run() {
+                   updatePackages();
+               }
+            }, 1500);
+        }
     }
 
     public void updatePackages() {
@@ -609,7 +612,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     @Override
     public void onClick(View v) {
         // When we have exited all apps or are in transition, disregard clicks
-        if (!mLauncher.isAllAppsCustomizeOpen() ||
+        if (!mLauncher.isAllAppsVisible() ||
                 mLauncher.getWorkspace().isSwitchingState()) return;
 
         if (v instanceof PagedViewIcon) {
@@ -1931,25 +1934,8 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     public boolean requiresRotation() {
         WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
         Display dp = wm.getDefaultDisplay();
-        DisplayMetrics dpm = new DisplayMetrics();
-        dp.getRealMetrics(dpm);
 
-        float[] dims = {dpm.widthPixels, dpm.heightPixels};
-        float degrees = getDegreesForRotation(dp.getRotation());
-
-	return degrees > 0;
-    }
-
-    public float getDegreesForRotation(int value) {
-        switch (value) {
-        case Surface.ROTATION_90:
-            return 360f - 90f;
-        case Surface.ROTATION_180:
-            return 360f - 180f;
-        case Surface.ROTATION_270:
-            return 360f - 270f;
-        }
-        return 0f;
+	return dp.getRotation()==Surface.ROTATION_90 || dp.getRotation()==Surface.ROTATION_270;
     }
 
     public Drawable getDrawableFromFile(String DIR, String MY_FILE_NAME) {
