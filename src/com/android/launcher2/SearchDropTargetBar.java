@@ -26,6 +26,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.FrameLayout;
+import android.os.SystemProperties;
 
 import com.android.launcher.R;
 
@@ -107,6 +108,13 @@ public class SearchDropTargetBar extends FrameLayout implements DragController.D
 
         mEnableDropDownDropTargets =
             getResources().getBoolean(R.bool.config_useDropTargetDownTransition);
+        
+        // SetVisibility of Searchbar
+        String searchbarStr = SystemProperties.get("persist.sys.prop.searchbar");
+        
+        if(searchbarStr.equals("true")){
+            mQSBSearchBar.setVisibility(View.GONE);
+        }
 
         // Create the various fade animations
         if (mEnableDropDownDropTargets) {
