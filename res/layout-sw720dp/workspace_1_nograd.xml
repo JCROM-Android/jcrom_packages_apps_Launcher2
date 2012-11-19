@@ -14,7 +14,7 @@
      limitations under the License.
 -->
 
-<!-- The workspace contains 5 screens of cells -->
+<!-- The workspace contains 1 screen of cells -->
 
 <com.android.launcher2.Workspace
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -23,13 +23,7 @@
     android:paddingRight="@dimen/workspace_right_padding"
     android:paddingTop="@dimen/workspace_top_padding"
     android:paddingBottom="@dimen/workspace_bottom_padding"
-    launcher:defaultScreen="2"
+    launcher:defaultScreen="0"
     launcher:pageSpacing="@dimen/workspace_page_spacing">
-      <include android:id="@+id/cell1" layout="@layout/workspace_screen" />
-      <include android:id="@+id/cell2" layout="@layout/workspace_screen" />
-      <include android:id="@+id/cell3" layout="@layout/workspace_screen" />
-      <include android:id="@+id/cell4" layout="@layout/workspace_screen" />
-      <include android:id="@+id/cell5" layout="@layout/workspace_screen" />
-      <include android:id="@+id/cell6" layout="@layout/workspace_screen" />
-      <include android:id="@+id/cell7" layout="@layout/workspace_screen" />
+      <include android:id="@id/cell1" layout="@layout/workspace_screen" />
 </com.android.launcher2.Workspace>

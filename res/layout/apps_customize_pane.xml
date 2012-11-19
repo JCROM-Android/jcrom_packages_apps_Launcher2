@@ -16,13 +16,14 @@
 <com.android.launcher2.AppsCustomizeTabHost
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:launcher="http://schemas.android.com/apk/res/com.android.launcher"
-    android:background="#FF000000">
+    >
     <LinearLayout
         android:id="@+id/apps_customize_content"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
+        android:background="#FF000000"
         android:layoutDirection="ltr">
         <!-- The layout_width of the tab bar gets overriden to align the content
              with the text in the tabs in AppsCustomizeTabHost. -->
