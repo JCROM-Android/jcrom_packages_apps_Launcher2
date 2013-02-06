@@ -27,6 +27,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.os.SystemProperties;
 
 import java.util.HashMap;
 
@@ -99,6 +100,13 @@ public class IconCache {
     }
 
     public Drawable getFullResIcon(ActivityInfo info) {
+        if ("true".equals(SystemProperties.get("persist.sys.force.hobby"))) {
+            CustomIconItem custom = CustomIconSetting.getInstance().get(info);
+            if (custom != null && !custom.filename.isEmpty()) {
+                // TODO: use cache
+                return Drawable.createFromPath(custom.getFilePath());
+            }
+        }
 
         Resources resources;
         try {
