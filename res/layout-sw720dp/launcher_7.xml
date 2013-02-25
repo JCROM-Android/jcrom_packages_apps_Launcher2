@@ -40,7 +40,7 @@
         android:layout_gravity="bottom"
         android:layout_marginBottom="@dimen/button_bar_height_plus_padding" />
 
-    <!-- The workspace contains 5 screens of cells -->
+    <!-- The workspace contains 7 screens of cells -->
     <com.android.launcher2.Workspace
         android:id="@+id/workspace"
         android:layout_width="match_parent"
@@ -61,6 +61,8 @@
         <include android:id="@+id/cell3" layout="@layout/workspace_screen" />
         <include android:id="@+id/cell4" layout="@layout/workspace_screen" />
         <include android:id="@+id/cell5" layout="@layout/workspace_screen" />
+        <include android:id="@+id/cell6" layout="@layout/workspace_screen" />
+        <include android:id="@+id/cell7" layout="@layout/workspace_screen" />
     </com.android.launcher2.Workspace>
 
     <include layout="@layout/hotseat"
