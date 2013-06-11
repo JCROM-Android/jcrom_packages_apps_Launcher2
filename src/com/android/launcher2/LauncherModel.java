@@ -62,6 +62,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import android.os.SystemProperties;
+
 /**
  * Maintains in-memory state of the Launcher. It is expected that there should be only one
  * LauncherModel object held in a static. Also provide APIs for updating the database state
@@ -86,6 +88,8 @@ public class LauncherModel extends BroadcastReceiver {
     // clear all queued binding runnables when the Launcher activity is destroyed.
     private static final int MAIN_THREAD_NORMAL_RUNNABLE = 0;
     private static final int MAIN_THREAD_BINDING_RUNNABLE = 1;
+
+    private static final String MY_HOMESCREEN_PROPERTY = "persist.sys.num.homescreen";
 
 
     private static final HandlerThread sWorkerThread = new HandlerThread("launcher-loader");
@@ -1179,15 +1183,20 @@ public class LauncherModel extends BroadcastReceiver {
                     return false;
                 }
 
+                String screenNum = SystemProperties.get(MY_HOMESCREEN_PROPERTY);
+                int screenCount = Launcher.DEFAULT_SCREEN;
+                if(screenNum != null && screenNum.length() != 0) {
+                    screenCount = Integer.valueOf(screenNum);
+                }
                 // We use the last index to refer to the hotseat and the screen as the rank, so
                 // test and update the occupied state accordingly
-                if (occupied[Launcher.SCREEN_COUNT][item.screen][0] != null) {
+                if (occupied[screenCount][item.screen][0] != null) {
                     Log.e(TAG, "Error loading shortcut into hotseat " + item
                         + " into position (" + item.screen + ":" + item.cellX + "," + item.cellY
-                        + ") occupied by " + occupied[Launcher.SCREEN_COUNT][item.screen][0]);
+                        + ") occupied by " + occupied[screenCount][item.screen][0]);
                     return false;
                 } else {
-                    occupied[Launcher.SCREEN_COUNT][item.screen][0] = item;
+                    occupied[screenCount][item.screen][0] = item;
                     return true;
                 }
             } else if (item.container != LauncherSettings.Favorites.CONTAINER_DESKTOP) {
@@ -1241,11 +1250,17 @@ public class LauncherModel extends BroadcastReceiver {
                 final Cursor c = contentResolver.query(
                         LauncherSettings.Favorites.CONTENT_URI, null, null, null, null);
 
+
+                String screenNum = SystemProperties.get(MY_HOMESCREEN_PROPERTY);
+                int screenCount = Launcher.DEFAULT_SCREEN;
+                if(screenNum != null && screenNum.length() != 0) {
+                    screenCount = Integer.valueOf(screenNum);
+                }
                 // +1 for the hotseat (it can be larger than the workspace)
                 // Load workspace in reverse order to ensure that latest items are loaded first (and
                 // before any earlier duplicates)
                 final ItemInfo occupied[][][] =
-                        new ItemInfo[Launcher.SCREEN_COUNT + 1][mCellCountX + 1][mCellCountY + 1];
+                        new ItemInfo[screenCount + 1][mCellCountX + 1][mCellCountY + 1];
 
                 try {
                     final int idIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites._ID);
@@ -1469,7 +1484,7 @@ public class LauncherModel extends BroadcastReceiver {
                     Log.d(TAG, "workspace layout: ");
                     for (int y = 0; y < mCellCountY; y++) {
                         String line = "";
-                        for (int s = 0; s < Launcher.SCREEN_COUNT; s++) {
+                        for (int s = 0; s < screenCount; s++) {
                             if (s > 0) {
                                 line += " | ";
                             }
@@ -1593,7 +1608,12 @@ public class LauncherModel extends BroadcastReceiver {
                     int cellCountX = LauncherModel.getCellCountX();
                     int cellCountY = LauncherModel.getCellCountY();
                     int screenOffset = cellCountX * cellCountY;
-                    int containerOffset = screenOffset * (Launcher.SCREEN_COUNT + 1); // +1 hotseat
+                    String screenNum = SystemProperties.get(MY_HOMESCREEN_PROPERTY);
+                    int screenCount = Launcher.DEFAULT_SCREEN;
+                    if(screenNum != null && screenNum.length() != 0) {
+                        screenCount = Integer.valueOf(screenNum);
+                    }
+                    int containerOffset = screenOffset * (screenCount + 1); // +1 hotseat
                     long lr = (lhs.container * containerOffset + lhs.screen * screenOffset +
                             lhs.cellY * cellCountX + lhs.cellX);
                     long rr = (rhs.container * containerOffset + rhs.screen * screenOffset +

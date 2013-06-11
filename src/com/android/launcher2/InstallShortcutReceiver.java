@@ -31,6 +31,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import android.os.SystemProperties;
+
 public class InstallShortcutReceiver extends BroadcastReceiver {
     public static final String ACTION_INSTALL_SHORTCUT =
             "com.android.launcher.action.INSTALL_SHORTCUT";
@@ -43,6 +45,8 @@ public class InstallShortcutReceiver extends BroadcastReceiver {
     private static final int INSTALL_SHORTCUT_SUCCESSFUL = 0;
     private static final int INSTALL_SHORTCUT_IS_DUPLICATE = -1;
     private static final int INSTALL_SHORTCUT_NO_SPACE = -2;
+
+    private static final String MY_HOMESCREEN_PROPERTY = "persist.sys.num.homescreen";
 
     // A mime-type representing shortcut data
     public static final String SHORTCUT_MIMETYPE =
@@ -136,10 +140,18 @@ public class InstallShortcutReceiver extends BroadcastReceiver {
 
             // Try adding to the workspace screens incrementally, starting at the default or center
             // screen and alternating between +1, -1, +2, -2, etc. (using ~ ceil(i/2f)*(-1)^(i-1))
-            final int screen = Launcher.DEFAULT_SCREEN;
-            for (int i = 0; i < (2 * Launcher.SCREEN_COUNT) + 1 && !found; ++i) {
+            //final int screen = Launcher.DEFAULT_SCREEN;
+            String screenNum = SystemProperties.get(MY_HOMESCREEN_PROPERTY);
+            int screenCount = Launcher.DEFAULT_SCREEN;
+            if(screenNum != null && screenNum.length() != 0) {
+                screenCount = Integer.valueOf(screenNum);
+            }
+            int screenDefault = screenCount / 2;
+            int screen = (screenDefault >= screenCount) ? screenCount / 2 : screenDefault;
+
+            for (int i = 0; i <= (2 * screenCount) + 1 && !found; ++i) {
                 int si = screen + (int) ((i / 2f) + 0.5f) * ((i % 2 == 1) ? 1 : -1);
-                if (0 <= si && si < Launcher.SCREEN_COUNT) {
+                if (0 <= si && si < screenCount) {
                     found = installShortcut(context, data, items, name, intent, si, exists, sp,
                             result);
                 }
