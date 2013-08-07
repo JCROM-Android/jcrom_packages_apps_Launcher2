@@ -64,7 +64,7 @@
     <application
         android:name="com.android.launcher2.LauncherApplication"
         android:label="@string/application_name"
-        android:icon="@drawable/ic_launcher_home"
+        android:icon="@mipmap/ic_launcher_home"
         android:hardwareAccelerated="true"
         android:largeHeap="@bool/config_largeHeap"
         android:supportsRtl="true">
@@ -88,7 +88,7 @@
             android:name="com.android.launcher2.WallpaperChooser"
             android:theme="@style/Theme.WallpaperPicker"
             android:label="@string/pick_wallpaper"
-            android:icon="@drawable/ic_launcher_wallpaper"
+            android:icon="@mipmap/ic_launcher_wallpaper"
             android:finishOnCloseSystemDialogs="true"
             android:process=":wallpaper_chooser">
             <intent-filter>
@@ -134,7 +134,16 @@
                 <action android:name="android.intent.action.USER_INITIALIZE" />
             </intent-filter>
         </receiver>
-        
+
+        <receiver android:name="com.android.launcher2.PackageChangedReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_CHANGED"/>
+                <action android:name="android.intent.action.PACKAGE_REPLACED"/>
+                <action android:name="android.intent.action.PACKAGE_REMOVED"/>
+                <data android:scheme="package"></data>
+            </intent-filter>
+        </receiver>
+
         <!-- The settings provider contains Home's data, like the workspace favorites -->
         <provider
             android:name="com.android.launcher2.LauncherProvider"

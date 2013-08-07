@@ -96,13 +96,13 @@ public class AppWidgetResizeFrame extends FrameLayout {
         mLeftHandle = new ImageView(context);
         mLeftHandle.setImageResource(R.drawable.widget_resize_handle_left);
         lp = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 
-                Gravity.LEFT | Gravity.CENTER_VERTICAL);
+                Gravity.START | Gravity.CENTER_VERTICAL);
         addView(mLeftHandle, lp);
 
         mRightHandle = new ImageView(context);
         mRightHandle.setImageResource(R.drawable.widget_resize_handle_right);
         lp = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 
-                Gravity.RIGHT | Gravity.CENTER_VERTICAL);
+                Gravity.END | Gravity.CENTER_VERTICAL);
         addView(mRightHandle, lp);
 
         mTopHandle = new ImageView(context);
@@ -399,8 +399,10 @@ public class AppWidgetResizeFrame extends FrameLayout {
 
     public void snapToWidget(boolean animate) {
         final DragLayer.LayoutParams lp = (DragLayer.LayoutParams) getLayoutParams();
-        int xOffset = mCellLayout.getLeft() + mCellLayout.getPaddingLeft() - mWorkspace.getScrollX();
-        int yOffset = mCellLayout.getTop() + mCellLayout.getPaddingTop() - mWorkspace.getScrollY();
+        int xOffset = mCellLayout.getLeft() + mCellLayout.getPaddingLeft()
+                + mDragLayer.getPaddingLeft() - mWorkspace.getScrollX();
+        int yOffset = mCellLayout.getTop() + mCellLayout.getPaddingTop()
+                + mDragLayer.getPaddingTop() - mWorkspace.getScrollY();
 
         int newWidth = mWidgetView.getWidth() + 2 * mBackgroundPadding - mWidgetPaddingLeft -
                 mWidgetPaddingRight;
@@ -442,7 +444,8 @@ public class AppWidgetResizeFrame extends FrameLayout {
                     newHeight);
             PropertyValuesHolder x = PropertyValuesHolder.ofInt("x", lp.x, newX);
             PropertyValuesHolder y = PropertyValuesHolder.ofInt("y", lp.y, newY);
-            ObjectAnimator oa = LauncherAnimUtils.ofPropertyValuesHolder(lp, width, height, x, y);
+            ObjectAnimator oa =
+                    LauncherAnimUtils.ofPropertyValuesHolder(lp, this, width, height, x, y);
             ObjectAnimator leftOa = LauncherAnimUtils.ofFloat(mLeftHandle, "alpha", 1.0f);
             ObjectAnimator rightOa = LauncherAnimUtils.ofFloat(mRightHandle, "alpha", 1.0f);
             ObjectAnimator topOa = LauncherAnimUtils.ofFloat(mTopHandle, "alpha", 1.0f);
