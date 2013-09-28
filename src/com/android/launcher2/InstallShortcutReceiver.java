@@ -142,7 +142,8 @@ public class InstallShortcutReceiver extends BroadcastReceiver {
             // screen and alternating between +1, -1, +2, -2, etc. (using ~ ceil(i/2f)*(-1)^(i-1))
             //final int screen = Launcher.DEFAULT_SCREEN;
             String screenNum = SystemProperties.get(MY_HOMESCREEN_PROPERTY);
-            int screenCount = Launcher.DEFAULT_SCREEN;
+            //int screenCount = Launcher.DEFAULT_SCREEN;
+            int screenCount = Launcher.SCREEN_COUNT;
             if(screenNum != null && screenNum.length() != 0) {
                 screenCount = Integer.valueOf(screenNum);
             }
