@@ -411,12 +411,12 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
             LinearLayout linearlayout = ((LinearLayout)host.findViewById(R.id.apps_customize_content));
             Drawable drawable = null;
             if (requiresRotation()) {
-                drawable = getDrawableFromFile("launcher", "launcher_wallpaper_land.png");
+                drawable = getDrawableFromFile("launcher", "launcher_wallpaper_land");
                 if(drawable == null){
-                    drawable = getDrawableFromFile("launcher", "launcher_wallpaper.png");
+                    drawable = getDrawableFromFile("launcher", "launcher_wallpaper");
                 }
             }else{
-                drawable = getDrawableFromFile("launcher", "launcher_wallpaper.png");
+                drawable = getDrawableFromFile("launcher", "launcher_wallpaper");
             }
 
             if( null != drawable ) {
@@ -1752,7 +1752,25 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         builder.append(File.separator);
         builder.append(MY_FILE_NAME);
         String filePath = builder.toString();
-        return Drawable.createFromPath(filePath);
+        String extension = checkThemeFile(filePath);
+        return Drawable.createFromPath(filePath + extension);
+    }
+
+    private String checkThemeFile(String filename) {
+        String extension = ".png";
+        File file = null;
+
+        file = new File(filename + ".png");
+        if(file.exists()) {
+            extension = ".png";
+        }else {
+            file = new File(filename + ".jpg");
+            if(file.exists()) {
+                extension = ".jpg";
+            }
+        }
+
+        return extension;
     }
 
 }
