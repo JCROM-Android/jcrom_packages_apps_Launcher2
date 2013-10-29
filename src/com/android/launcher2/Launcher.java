@@ -42,6 +42,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -290,6 +291,8 @@ public final class Launcher extends Activity
     // it from the context.
     private SharedPreferences mSharedPrefs;
 
+    private SharedPreferences mHomeStatePrefs;
+
     // Holds the page that we need to animate to, and the icon views that we need to animate up
     // when we scroll to that page on resume.
     private int mNewShortcutAnimatePage = -1;
@@ -463,6 +466,11 @@ public final class Launcher extends Activity
 
         // On large interfaces, we want the screen to auto-rotate based on the current orientation
         unlockScreenOrientation(true);
+
+        mHomeStatePrefs = getSharedPreferences("jcrom_home", MODE_WORLD_READABLE|MODE_WORLD_WRITEABLE|MODE_MULTI_PROCESS);
+        Editor e = mHomeStatePrefs.edit();
+        e.putBoolean("home", true);
+        e.commit();
     }
 
     protected void onUserLeaveHint() {
@@ -2835,6 +2843,9 @@ public final class Launcher extends Activity
 
         // Change the state *after* we've called all the transition code
         mState = State.WORKSPACE;
+        Editor e = mHomeStatePrefs.edit();
+        e.putBoolean("home", true);
+        e.commit();
 
         // Resume the auto-advance of widgets
         mUserPresent = true;
@@ -2853,6 +2864,9 @@ public final class Launcher extends Activity
 
         // Change the state *after* we've called all the transition code
         mState = State.APPS_CUSTOMIZE;
+        Editor e = mHomeStatePrefs.edit();
+        e.putBoolean("home", false);
+        e.commit();
 
         // Pause the auto-advance of widgets until we are out of AllApps
         mUserPresent = false;
@@ -2869,6 +2883,9 @@ public final class Launcher extends Activity
             hideAppsCustomizeHelper(State.APPS_CUSTOMIZE_SPRING_LOADED, true, true, null);
             hideDockDivider();
             mState = State.APPS_CUSTOMIZE_SPRING_LOADED;
+            Editor e = mHomeStatePrefs.edit();
+            e.putBoolean("home", false);
+            e.commit();
         }
     }
 
@@ -2900,6 +2917,9 @@ public final class Launcher extends Activity
             final boolean springLoaded = true;
             showAppsCustomizeHelper(animated, springLoaded);
             mState = State.APPS_CUSTOMIZE;
+            Editor e = mHomeStatePrefs.edit();
+            e.putBoolean("home", false);
+            e.commit();
         }
         // Otherwise, we are not in spring loaded mode, so don't do anything.
     }
